@@ -47,9 +47,6 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      - name: Import existing documents bucket
-        run: terraform import aws_s3_bucket.documents enterprise-ai-document-agent-docs
-
       - name: Terraform Validate
         run: terraform validate
 
