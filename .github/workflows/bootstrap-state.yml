@@ -2,6 +2,9 @@ name: Bootstrap Terraform State
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - dev
 
 permissions:
   id-token: write
