@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   terraform:
-    name: Terraform Validation
+    name: Terraform Deployment
     runs-on: ubuntu-latest
 
     defaults:
@@ -43,6 +43,11 @@ jobs:
 
       - name: Terraform Format Check
         run: terraform fmt -check
+
+      - name: Package Lambda
+        run: |
+          cd lambda
+          zip ../lambda.zip handler.py
 
       - name: Terraform Init
         run: terraform init
