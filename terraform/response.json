@@ -1,1 +1,1 @@
-{"statusCode": 200, "body": "{\"question\": \"What documents do you have?\", \"documents\": []}"}
+{"statusCode": 200, "body": "{\"question\": \"What documents do you have?\", \"documents\": [\"documents/aws-security.txt\", \"documents/company.txt\", \"documents/terraform.txt\"]}"}

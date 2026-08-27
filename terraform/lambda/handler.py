@@ -8,31 +8,22 @@ BUCKET = "enterprise-ai-document-agent-docs"
 
 def lambda_handler(event, context):
 
-    question = event.get(
-        "question",
-        "What documents are available?"
+    key = event.get(
+        "key",
+        "documents/terraform.txt"
     )
 
-    response = s3.list_objects_v2(
+    response = s3.get_object(
         Bucket=BUCKET,
-        Prefix="documents/"
+        Key=key
     )
 
-    documents = []
-
-    for item in response.get("Contents", []):
-
-        key = item["Key"]
-
-        if key.endswith("/"):
-            continue
-
-        documents.append(key)
+    content = response["Body"].read().decode("utf-8")
 
     return {
         "statusCode": 200,
         "body": json.dumps({
-            "question": question,
-            "documents": documents
+            "document": key,
+            "content": content
         })
     }
