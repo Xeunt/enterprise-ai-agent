@@ -41,14 +41,6 @@ resource "aws_iam_role_policy" "agent_s3_access" {
         ]
 
         Resource = "arn:aws:s3:::enterprise-ai-document-agent-docs"
-
-        Condition = {
-          StringLike = {
-            "s3:prefix" = [
-              "documents/*"
-            ]
-          }
-        }
       },
       {
         Effect = "Allow"
