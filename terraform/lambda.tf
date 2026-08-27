@@ -36,7 +36,8 @@ resource "aws_iam_role_policy" "agent_s3_access" {
         Effect = "Allow"
 
         Action = [
-          "s3:GetObject"
+          "s3:GetObject",
+          "s3:ListBucket"
         ]
 
         Resource = "arn:aws:s3:::enterprise-ai-document-agent-docs/documents/*"
