@@ -1,1 +1,1 @@
-{"statusCode": 200, "body": "{\"question\": \"How to make an ON Cloud shoe?\", \"document\": \"documents/terraform.txt\", \"answer\": \"I could not find the answer in the provided document.\"}"}
+{"statusCode": 400, "body": "{\"error\": \"Unable to determine a valid document\"}"}

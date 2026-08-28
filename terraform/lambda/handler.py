@@ -20,9 +20,9 @@ MODEL_ID = "apac.amazon.nova-lite-v1:0"
 
 # Documents the agent is allowed to retrieve
 DOCUMENTS = {
-    "terraform": "documents/terraform.txt",
-    "security": "documents/aws-security.txt",
-    "company": "documents/company.txt"
+    "menu": "documents/menu.txt",
+    "company": "documents/company.txt",
+    "policies": "documents/policies.txt"
 }
 
 
@@ -44,20 +44,24 @@ the user's question.
 
 Available documents:
 
-terraform
-security
+menu
 company
+policies
+none
 
 Return ONLY one of these exact words:
-terraform
-security
-company
+
+menu - drinks, food, and prices
+company - information about Cloud Café, its services, location, hours, and facilities
+policies - refunds, cancellations, order changes, pets, and customer responsibilities
+none - if none of the documents can answer the question
 
 User question:
 {question}
 """
 
 
+    # Ask Nova to classify the question
     classification_response = bedrock.converse(
         modelId=MODEL_ID,
         messages=[
@@ -79,6 +83,18 @@ User question:
         .strip()
         .lower()
     )
+
+
+    # If Nova determines that none of the documents are relevant
+    if document_type == "none":
+        return {
+            "statusCode": 200,
+            "body": json.dumps({
+                "question": question,
+                "document": None,
+                "answer": "I could not find information about that in the available documents."
+            })
+        }
 
 
     # Make sure Nova selected a valid document
@@ -148,7 +164,7 @@ Document:
     )
 
 
-    # Return the result
+    # Return the AI answer
     return {
         "statusCode": 200,
         "body": json.dumps({
@@ -157,3 +173,4 @@ Document:
             "answer": answer
         })
     }
+
