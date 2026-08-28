@@ -59,10 +59,9 @@ resource "aws_iam_role_policy" "agent_s3_access" {
         ]
 
         Resource = [
-          "arn:aws:bedrock:ap-southeast-1:690228027276:inference-profile/apac.amazon.nova-lite-v1:0",
-          "arn:aws:bedrock:ap-southeast-1::foundation-model/amazon.nova-lite-v1:0",
-          "arn:aws:bedrock:ap-southeast-2::foundation-model/amazon.nova-lite-v1:0"
-        ]
+    "arn:aws:bedrock:ap-southeast-1:690228027276:inference-profile/apac.amazon.nova-lite-v1:0",
+    "arn:aws:bedrock:*::foundation-model/amazon.nova-lite-v1:0"
+  ]
       }
     ]
   })
