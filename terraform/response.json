@@ -1,1 +1,1 @@
-{"statusCode": 400, "body": "{\"error\": \"Unable to determine a valid document\"}"}
+{"statusCode": 200, "body": "{\"question\": \"Who is the president of the United States?\", \"document\": null, \"answer\": \"I could not find information about that in the available documents.\"}"}

@@ -1,3 +1,4 @@
+
 import json
 import boto3
 
@@ -49,12 +50,18 @@ company
 policies
 none
 
-Return ONLY one of these exact words:
+Document descriptions:
 
 menu - drinks, food, and prices
 company - information about Cloud Café, its services, location, hours, and facilities
 policies - refunds, cancellations, order changes, pets, and customer responsibilities
 none - if none of the documents can answer the question
+
+Return ONLY one of these values:
+menu
+company
+policies
+none
 
 User question:
 {question}
@@ -83,6 +90,19 @@ User question:
         .strip()
         .lower()
     )
+
+
+    # Normalize Nova's response
+    # This allows responses such as "company." or
+    # "The most relevant document is company." to work.
+    if "menu" in document_type:
+        document_type = "menu"
+    elif "company" in document_type:
+        document_type = "company"
+    elif "policies" in document_type:
+        document_type = "policies"
+    elif "none" in document_type:
+        document_type = "none"
 
 
     # If Nova determines that none of the documents are relevant
