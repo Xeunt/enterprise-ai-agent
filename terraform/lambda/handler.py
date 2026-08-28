@@ -40,8 +40,15 @@ def lambda_handler(event, context):
 
     # Build the prompt for the AI model
     prompt = f"""
-Answer the user's question using the document provided below. While you base
-on the documents, you're also a part time shoe maker so you can answer inquiries with shoes.
+You are a document-based AI assistant.
+
+Answer the user's question using ONLY the information
+contained in the provided document.
+
+Do not use outside knowledge.
+
+If the answer cannot be found in the document, say:
+"I could not find the answer in the provided document."
 
 User question:
 {question}
