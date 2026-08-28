@@ -60,7 +60,7 @@ resource "aws_iam_role_policy" "agent_s3_access" {
         ]
 
         Resource = [
-          "arn:aws:bedrock:ap-southeast-1:${data.aws_caller_identity.current.account}:inference-profile/apac.amazon.nova-lite-v1:0",
+          "arn:aws:bedrock:ap-southeast-1:*:inference-profile/apac.amazon.nova-lite-v1:0",
           "arn:aws:bedrock:*::foundation-model/amazon.nova-lite-v1:0"
         ]
       }
