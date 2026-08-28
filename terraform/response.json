@@ -1,1 +1,1 @@
-{"statusCode": 200, "body": "{\"question\": \"What documents do you have?\", \"documents\": [\"documents/aws-security.txt\", \"documents/company.txt\", \"documents/terraform.txt\"]}"}
+{"statusCode": 200, "body": "{\"document\": \"documents/terraform.txt\", \"content\": \"Terraform is an Infrastructure as Code tool.\\n\\nIt allows infrastructure to be defined using configuration\\nfiles and deployed consistently across environments.\\n\\nTerraform can manage AWS resources such as VPCs, IAM,\\nLambda, S3, and many other services.\"}"}

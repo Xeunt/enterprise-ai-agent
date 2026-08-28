@@ -50,6 +50,15 @@ resource "aws_iam_role_policy" "agent_s3_access" {
         ]
 
         Resource = "arn:aws:s3:::enterprise-ai-document-agent-docs/documents/*"
+      },
+      {
+        Effect = "Allow"
+
+        Action = [
+          "bedrock:InvokeModel"
+        ]
+
+        Resource = "arn:aws:bedrock:ap-southeast-1::foundation-model/amazon.nova-lite-v1:0"
       }
     ]
   })
