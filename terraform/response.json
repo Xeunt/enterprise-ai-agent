@@ -1,1 +1,1 @@
-{"statusCode": 200, "body": "{\"question\": \"Who is the president of the United States?\", \"document\": null, \"answer\": \"I could not find information about that in the available documents.\"}"}
+{"statusCode": 200, "body": "{\"question\": \"What time does Cloud Caf\\u00e9 close?\", \"document\": \"documents/company.txt\", \"answer\": \"Cloud Caf\\u00e9 closes at 9:00 PM.\"}"}
