@@ -2,7 +2,7 @@ import json
 import boto3
 
 
-# Create AWS service clients
+# Create AWS service clients add comment
 s3 = boto3.client("s3")
 bedrock = boto3.client("bedrock-runtime", region_name="ap-southeast-1")
 
