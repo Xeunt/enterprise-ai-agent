@@ -1,10 +1,10 @@
-
 import json
 import boto3
 
 
 # Create AWS service clients
 s3 = boto3.client("s3")
+
 bedrock = boto3.client(
     "bedrock-runtime",
     region_name="ap-southeast-1"
@@ -29,8 +29,27 @@ DOCUMENTS = {
 
 def lambda_handler(event, context):
 
+    # API Gateway sends the request inside "body".
+    # Direct Lambda invocation sends the request directly
+    # as the event object.
+    body = event.get("body")
+
+    if body:
+        try:
+            body = json.loads(body)
+        except json.JSONDecodeError:
+            return {
+                "statusCode": 400,
+                "body": json.dumps({
+                    "error": "Invalid JSON request body"
+                })
+            }
+    else:
+        body = event
+
+
     # Get the user's question
-    question = event.get(
+    question = body.get(
         "question",
         "What is this document about?"
     )
@@ -40,8 +59,8 @@ def lambda_handler(event, context):
     classification_prompt = f"""
 You are a document routing assistant.
 
-Choose which document is most relevant to answering
-the user's question.
+Choose the single document that is most relevant
+to answering the user's question.
 
 Available documents:
 
@@ -57,11 +76,14 @@ company - information about Cloud Café, its services, location, hours, and faci
 policies - refunds, cancellations, order changes, pets, and customer responsibilities
 none - if none of the documents can answer the question
 
-Return ONLY one of these values:
+Return ONLY one of these exact values:
+
 menu
 company
 policies
 none
+
+Do not explain your choice.
 
 User question:
 {question}
@@ -93,14 +115,15 @@ User question:
 
 
     # Normalize Nova's response
-    # This allows responses such as "company." or
-    # "The most relevant document is company." to work.
     if "menu" in document_type:
         document_type = "menu"
+
     elif "company" in document_type:
         document_type = "company"
+
     elif "policies" in document_type:
         document_type = "policies"
+
     elif "none" in document_type:
         document_type = "none"
 
@@ -112,7 +135,10 @@ User question:
             "body": json.dumps({
                 "question": question,
                 "document": None,
-                "answer": "I could not find information about that in the available documents."
+                "answer": (
+                    "I could not find information about that "
+                    "in the available documents."
+                )
             })
         }
 
