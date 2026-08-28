@@ -2,17 +2,28 @@ import json
 import boto3
 
 
-# Create AWS service clients add comment
+# Create AWS service clients
 s3 = boto3.client("s3")
-bedrock = boto3.client("bedrock-runtime", region_name="ap-southeast-1")
+bedrock = boto3.client(
+    "bedrock-runtime",
+    region_name="ap-southeast-1"
+)
 
 
 # S3 bucket containing the documents
 BUCKET = "enterprise-ai-document-agent-docs"
 
 
-# Amazon Nova Lite model
+# Amazon Nova Lite inference profile
 MODEL_ID = "apac.amazon.nova-lite-v1:0"
+
+
+# Documents the agent is allowed to retrieve
+DOCUMENTS = {
+    "terraform": "documents/terraform.txt",
+    "security": "documents/aws-security.txt",
+    "company": "documents/company.txt"
+}
 
 
 def lambda_handler(event, context):
@@ -23,22 +34,79 @@ def lambda_handler(event, context):
         "What is this document about?"
     )
 
-    # Get the document key
-    key = event.get(
-        "key",
-        "documents/terraform.txt"
+
+    # Ask Nova which document is relevant
+    classification_prompt = f"""
+You are a document routing assistant.
+
+Choose which document is most relevant to answering
+the user's question.
+
+Available documents:
+
+terraform
+security
+company
+
+Return ONLY one of these exact words:
+terraform
+security
+company
+
+User question:
+{question}
+"""
+
+
+    classification_response = bedrock.converse(
+        modelId=MODEL_ID,
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "text": classification_prompt
+                    }
+                ]
+            }
+        ]
     )
 
-    # Retrieve the document from S3
+
+    # Extract Nova's document selection
+    document_type = (
+        classification_response["output"]["message"]["content"][0]["text"]
+        .strip()
+        .lower()
+    )
+
+
+    # Make sure Nova selected a valid document
+    if document_type not in DOCUMENTS:
+        return {
+            "statusCode": 400,
+            "body": json.dumps({
+                "error": "Unable to determine a valid document"
+            })
+        }
+
+
+    # Convert the document type into an S3 key
+    key = DOCUMENTS[document_type]
+
+
+    # Retrieve the selected document from S3
     response = s3.get_object(
         Bucket=BUCKET,
         Key=key
     )
 
+
     # Read the document contents
     content = response["Body"].read().decode("utf-8")
 
-    # Build the prompt for the AI model
+
+    # Build the final AI prompt
     prompt = f"""
 You are a document-based AI assistant.
 
@@ -55,12 +123,10 @@ User question:
 
 Document:
 {content}
-
-If the answer cannot be found in the document, say:
-"I could not find the answer in the provided document."
 """
 
-    # Send the question and document to Amazon Nova Lite
+
+    # Ask Nova to generate the final answer
     response = bedrock.converse(
         modelId=MODEL_ID,
         messages=[
@@ -75,10 +141,14 @@ If the answer cannot be found in the document, say:
         ]
     )
 
-    # Extract the AI-generated answer
-    answer = response["output"]["message"]["content"][0]["text"]
 
-    # Return the AI answer
+    # Extract the AI-generated answer
+    answer = (
+        response["output"]["message"]["content"][0]["text"]
+    )
+
+
+    # Return the result
     return {
         "statusCode": 200,
         "body": json.dumps({
@@ -87,4 +157,3 @@ If the answer cannot be found in the document, say:
             "answer": answer
         })
     }
-
