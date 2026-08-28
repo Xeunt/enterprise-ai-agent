@@ -12,7 +12,7 @@ BUCKET = "enterprise-ai-document-agent-docs"
 
 
 # Amazon Nova Lite model
-MODEL_ID = "amazon.nova-lite-v1:0"
+MODEL_ID = "apac.amazon.nova-lite-v1:0"
 
 
 def lambda_handler(event, context):
