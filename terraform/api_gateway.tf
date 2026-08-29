@@ -77,5 +77,6 @@ resource "aws_lambda_permission" "api_gateway" {
 output "api_url" {
   description = "HTTP API endpoint for the AI agent"
   value       = aws_apigatewayv2_stage.default.invoke_url
+  sensitive   = true
 }
 
