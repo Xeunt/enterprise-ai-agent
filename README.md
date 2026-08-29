@@ -235,6 +235,19 @@ If you're pulling this repo fresh, or testing from a machine that hasn't run
 Terraform against this project before, initialize your local CLI against the
 remote state first.
 
+> **Run all commands below from inside the `terraform/` folder** (the
+> directory containing `main.tf`, `api_gateway.tf`, `lambda.tf`, etc.).
+> Running `terraform output` from any other directory returns nothing —
+> no error, no value, just a blank result — which looks like a broken
+> command but is actually just Terraform not finding a `.tf` config or
+> state in your current path.
+>
+> ```bash
+> cd terraform
+> pwd        # confirm you're in the right folder
+> ls *.tf    # confirm you see main.tf, api_gateway.tf, lambda.tf, etc.
+> ```
+
 ### 1. Set up your local AWS credentials
 
 Make sure your CLI has credentials with at least read access to the state
@@ -333,6 +346,12 @@ Expected: some requests return `200`, others return `429 Too Many Requests`.
 ```bash
 unset API_KEY API_URL
 ```
+
+> Note: `$API_KEY` and `$API_URL` are only set for your current terminal
+> session. If you open a new terminal tab/window, or your session resets,
+> you'll need to `cd` back into the `terraform/` folder and re-run step 3
+> before testing again — otherwise curl will fail with something like
+> `curl: (6) Could not resolve host: ask` because the variable was empty.
 
 ## Cost Notes
 
