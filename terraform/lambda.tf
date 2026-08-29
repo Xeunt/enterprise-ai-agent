@@ -1,4 +1,10 @@
 data "aws_caller_identity" "current" {}
+
+# Generates a random 32-character secret used to authenticate calls to /ask
+resource "random_password" "api_key" {
+  length  = 32
+  special = false # alphanumeric only, so it's safe to pass in an HTTP header
+}
 resource "aws_iam_role" "agent_lambda" {
   name = "enterprise-ai-agent-lambda-role"
 
@@ -83,4 +89,20 @@ resource "aws_lambda_function" "agent" {
   source_code_hash = filebase64sha256(
     "${path.module}/lambda.zip"
   )
+
+  # Makes the API key available inside the Lambda code as os.environ["API_KEY"]
+  environment {
+    variables = {
+      API_KEY = random_password.api_key.result
+    }
+  }
+
+
+}
+# Lets you retrieve the generated key locally with: terraform output -raw api_key
+# (never shown automatically in plan/apply logs because sensitive = true)
+output "api_key" {
+  description = "Secret key required to call the /ask endpoint"
+  value       = random_password.api_key.result
+  sensitive   = true
 }
