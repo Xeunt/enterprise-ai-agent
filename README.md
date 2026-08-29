@@ -143,14 +143,36 @@ Attach the following policy to whatever IAM role/user runs `terraform apply`
                 "logs:DeleteResourcePolicy"
             ],
             "Resource": "*"
+        },
+        {
+            "Sid": "ApiGatewayManagement",
+            "Effect": "Allow",
+            "Action": [
+                "apigateway:GET",
+                "apigateway:POST",
+                "apigateway:PUT",
+                "apigateway:PATCH",
+                "apigateway:DELETE"
+            ],
+            "Resource": [
+                "arn:aws:apigateway:ap-southeast-1::/apis",
+                "arn:aws:apigateway:ap-southeast-1::/apis/*"
+            ]
         }
     ]
 }
 ```
 
-> Note: `logs:DescribeLogGroups`, log-delivery actions, and resource-policy
-> actions require `Resource: "*"` — AWS does not support scoping these to a
-> specific log group ARN.
+> Notes:
+> - `logs:DescribeLogGroups`, log-delivery actions, and resource-policy
+>   actions require `Resource: "*"` — AWS does not support scoping these to a
+>   specific log group ARN.
+> - `ApiGatewayManagement` is required for both creating **and** reading/
+>   updating the API Gateway resources (`aws_apigatewayv2_api`,
+>   `aws_apigatewayv2_route`, `aws_apigatewayv2_integration`,
+>   `aws_apigatewayv2_stage`). Without it, even a no-op `terraform apply`
+>   will fail with an `apigateway:GET` `AccessDeniedException` once
+>   resources already exist.
 
 ### 2. Account-level CloudWatch logging role (one-time, per AWS account)
 
