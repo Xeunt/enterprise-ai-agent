@@ -4,3 +4,6 @@
 crash.log
 *.tfvars
 *.tfvars.json
+response.json
+__pycache__/
+*.pyc
