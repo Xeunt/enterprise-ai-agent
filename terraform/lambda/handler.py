@@ -217,6 +217,5 @@ Document:
             "question": question,
             "document": key,
             "answer": answer
-        })
+        }, ensure_ascii=False)
     }
-
