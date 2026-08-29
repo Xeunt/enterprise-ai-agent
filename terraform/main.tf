@@ -12,8 +12,16 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 6.0"
     }
+
+    # Needed to auto-generate the random API key in lambda.tf
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
   }
 }
+
+
 
 provider "aws" {
   region = "ap-southeast-1"

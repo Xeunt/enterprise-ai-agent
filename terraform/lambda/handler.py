@@ -1,6 +1,9 @@
 import json
+import os
 import boto3
 
+# The secret key set by Terraform (see lambda.tf -> environment block)
+API_KEY = os.environ.get("API_KEY")
 
 # Create AWS service clients
 s3 = boto3.client("s3")
@@ -28,7 +31,22 @@ DOCUMENTS = {
 
 
 def lambda_handler(event, context):
+    
+    # API Gateway sends custom headers inside event["headers"].
+    # Lowercase keys because HTTP headers can arrive in any casing.
+    headers = {
+        k.lower(): v for k, v in (event.get("headers") or {}).items()
+    }
 
+    # Compare the caller's key against our secret. Reject if missing or wrong.
+    if headers.get("x-api-key") != API_KEY:
+        return {
+            "statusCode": 401,
+            "body": json.dumps({
+                "error": "Unauthorized"
+            })
+        }
+        
     # API Gateway sends the request inside "body".
     # Direct Lambda invocation sends the request directly
     # as the event object.
@@ -134,7 +152,7 @@ User question:
             "statusCode": 200,
             "body": json.dumps({
                 "question": question,
-                "document": None,
+               #"document": None,
                 "answer": (
                     "I could not find information about that "
                     "in the available documents."
@@ -215,7 +233,7 @@ Document:
         "statusCode": 200,
         "body": json.dumps({
             "question": question,
-            "document": key,
+           #"document": key,
             "answer": answer
         }, ensure_ascii=False)
     }
